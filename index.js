@@ -20,8 +20,28 @@ app.get("/", function (req, res) {
 
 
 // your first API endpoint... 
-app.get("/api/hello", function (req, res) {
-  res.json({greeting: 'hello API'});
+app.get("/api/:date?", function (req, res) {
+  let dateInput = req.params.date;
+
+  if (!dateInput) {
+    const currDate = new Date();
+    return res.json({ unix: currDate.getTime(), utc: currDate.toUTCString() });
+  }
+
+  let date;
+  // Check if the input date is a valid Unix timestamp
+  if (!isNaN(dateInput)) {
+    date = new Date(parseInt(dateInput));
+  } else {
+    date = new Date(dateInput);
+  }
+
+  // Check if the date is valid
+  if (date.toString() === "Invalid Date") {
+    return res.json({ error: "Invalid Date" });
+  }
+
+  res.json({ unix: date.getTime(), utc: date.toUTCString() });
 });
 
 
